@@ -8,7 +8,8 @@ from fake_useragent import UserAgent
 
 
 def transtext(obj, flag=False):
-	''' Форматирование текста из блока информации. '''
+	''' Форматирование текста из блока информации.
+	    При флаге срезает последний элемент строки. '''
 	if flag:
 		return obj.text.strip()[:-1]
 	return obj.text.strip()
@@ -17,7 +18,7 @@ def check_dir(photo_path):
 	''' Проверяет наличие директорий из пути, при отсутствии 
 		создаёт их. 
 	    Возвращает относительный путь до итогового файла. '''
-	last_path = 'img/'
+	last_path = ""
 	photo_path = photo_path[1:].split('/')
 
 	for dir in photo_path[:-1]:
@@ -59,7 +60,17 @@ def get_bg_image():
 
 def get_other_media():
 	''' Извлечение медиа-файлов из слайдера. '''
-	pass
+	result_list = []
+	media = soup.find('div', class_='fotorama')
+	media_urls = media.findAll('a')
+
+	for data in media_urls:
+		if 'youtu' in data['href']:
+			result_list.append(data['href'])
+		else:
+			result_list.append(write_photo(data['href']))
+	return result_list
+
 
 def get_description():
 	''' Извлечение описания новеллы, без дополнительной информации. '''
@@ -100,7 +111,7 @@ def main():
 	novell_desc["MAIN_IMAGE"] = get_main_image()
 	novell_desc["BG_IMAGE"] = get_bg_image()
 	novell_desc["description"] = get_description()
-
+	novell_desc['MEDIA'] = get_other_media()
 	pprint.pprint(novell_desc)
 
 
