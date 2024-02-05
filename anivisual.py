@@ -52,7 +52,10 @@ def get_bg_image():
 	bg_url = soup.find('style', attrs={'rel': 'stylesheet'})
 
 	if 'url' in bg_url.text:
-		bg_url = re.search("/(.+jpg)", bg_url.text).group()
+		if ".png" in bg_url.text:
+			bg_url = re.search("/(.+png)", bg_url.text).group()
+		else:
+			bg_url = re.search("(.+jpg)", bg_url.text).group()
 		final_path = write_photo(bg_url)
 
 		return final_path
@@ -115,7 +118,8 @@ def main():
 	pprint.pprint(novell_desc)
 
 
-URL = "https://anivisual.net/stuff/41-1-0-3"
+#URL = input("Введите ссылку на новеллу... >> ")
+URL = "https://anivisual.net/stuff/7-1-0-2430"
 headers = {'User-Agent': UserAgent().random} 
 page = requests.get(URL, headers=headers)
 soup = BeautifulSoup(page.text, 'html.parser')
