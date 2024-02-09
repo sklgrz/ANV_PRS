@@ -7,12 +7,18 @@ from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
 
-def transtext(obj, flag=False):
-	''' Форматирование текста из блока информации.
+def transtext(obj, flag=False, flag_name=False):
+	''' Форматирование данных из блока информации.
+	    Возвращает строку или список.
 	    При флаге срезает последний элемент строки. '''
+	obj = obj.text.strip()
 	if flag:
-		return obj.text.strip()[:-1]
-	return obj.text.strip()
+		return obj[:-1]
+
+	elif ',' in obj and not flag_name:
+		return obj.split(', ') 	
+	return obj
+
 
 def check_dir(photo_path):
 	''' Проверяет наличие директорий из пути, при отсутствии 
@@ -55,7 +61,7 @@ def get_bg_image():
 		if ".png" in bg_url.text:
 			bg_url = re.search("/(.+png)", bg_url.text).group()
 		else:
-			bg_url = re.search("(.+jpg)", bg_url.text).group()
+			bg_url = re.search("/(.+jpg)", bg_url.text).group()
 		final_path = write_photo(bg_url)
 
 		return final_path
@@ -91,11 +97,11 @@ def search_info():
 	    Название, Оригинальное Название(опц.), Год релиза, 
 	    Тип, Жанр, Платформа, Продолжительность и так далее. """
 	desc_main = dict()
-	desc_main["NAME"] = transtext(soup.find('h1'))
+	desc_main["NAME"] = transtext(soup.find('h1'), flag_name=True)
 	desc_main["RAITING"] = transtext(soup.find(attrs={"itemprop": "ratingValue"}))
 
 	if soup.find('div', class_='single-goods__top').find('h3') is not None:
-		desc_main["SUBNAME"] = transtext(soup.find('h3'))
+		desc_main["SUBNAME"] = transtext(soup.find('h3'), flag_name=True)
 	else:
 		desc_main["SUBNAME"] = ""
 
@@ -105,6 +111,12 @@ def search_info():
 		value = data.find('span', class_='val art')
 		if key:
 			desc_main[transtext(key, flag=True)] = transtext(value)
+
+	value = []
+	categories = soup.findAll('td')
+	for data in categories:
+		value.append(data.a.text)
+	desc_main["Категории"] = value
 
 	return desc_main
 
