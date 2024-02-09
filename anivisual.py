@@ -81,16 +81,21 @@ def get_other_media():
 	return result_list
 
 
-def get_description():
-	''' Извлечение описания новеллы, без дополнительной информации. '''
+def get_description(save_all=True, form_text=True):
+	''' Извлечение описания новеллы в строковом формате. 
+	    save_all - парсинг скрытых данных.
+	    form_text - удаление тегов с сохранением текста. '''
 	description = soup.find('div', class_='tab-pane active').find('div', 
 		attrs={"style": " display:inline-block;padding-top: 20px;"})
-	while 'uSpoilerClosed' in str(description):
-		description.select_one('.uSpoilerClosed').decompose()
+
+	if not save_all:
+		while 'uSpoilerClosed' in str(description):
+			description.select_one('.uSpoilerClosed').decompose()
+
 	while 'UhideBlockL' in str(description):
 		description.select_one('.UhideBlockL').decompose()
 
-	return description.text
+	return description.text if form_text == True else str(description)
 
 def search_info():
 	""" Извлечение основной информации о новелле.
@@ -125,7 +130,7 @@ def main():
 	novell_desc = search_info()
 	novell_desc["MAIN_IMAGE"] = get_main_image()
 	novell_desc["BG_IMAGE"] = get_bg_image()
-	novell_desc["description"] = get_description()
+	novell_desc["description"] = get_description(save_all=False, form_text=False)
 	novell_desc['MEDIA'] = get_other_media()
 	pprint.pprint(novell_desc)
 
