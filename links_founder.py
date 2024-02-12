@@ -1,5 +1,4 @@
 import requests
-import time
 
 from os.path import exists
 from bs4 import BeautifulSoup
@@ -29,15 +28,20 @@ def next_page(restart=False, skip=False):
 	    Возвращает флаг для остановки парсинга. """
 	global URL, page, soup, count_page, headers
 
+	if soup.find('div', class_="pagination") is None:
+		return True
+
 	next = soup.find('div', class_="pagination").b.next_sibling.next_sibling
+
+	if next is None:
+		return True
+
+	if restart:
+		headers = {"User-Agent": UserAgent().random}
 
 	if skip:		
 		headers = {"User-Agent": UserAgent().random}
 		next = next.next_sibling.next_sibling
-	if next == None:
-		return True
-	if restart:
-		headers = {"User-Agent": UserAgent().random}
 
 	URL = "https://anivisual.net" + next["href"]
 	page = requests.get(URL, headers=headers)
@@ -90,7 +94,7 @@ def main():
 	add_to_file(links)
 
 #START URL input...
-URL = "https://anivisual.net/stuff/1"
+URL = "https://anivisual.net/stuff/"
 headers = {"User-Agent": UserAgent().random}
 page = requests.get(URL, headers=headers)
 soup = BeautifulSoup(page.text, "lxml")
