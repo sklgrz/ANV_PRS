@@ -71,6 +71,17 @@ def next_page(restart=False, skip=False):
 
 	return True
 
+
+def transform_to_num(link):
+	""" Вспомогательная функция, форматирующее число, для 
+	    сортировки ссылок в порядке неубывания. """
+	first_number = link[link.rfind("/") + 1:link.find("-")]
+	end_number = link[link.rfind("-") + 1:]
+
+	result_number = int(first_number + ("0" * (4 - len(end_number)) + end_number))
+	return result_number
+
+
 def add_to_file(links, check=True):
 	""" Добавляет новые уникальные ссылки в файл и сортирует их.
 	    Опционально: считывает все ссылки для проверки на 
@@ -80,7 +91,7 @@ def add_to_file(links, check=True):
 			for line in file.readlines():
 				links.append(line.replace("\n", ""))
 	links = list(set(links))
-	links.sort()
+	links = sorted(links, key=transform_to_num)
 	print(f"total links: {len(links)}")
 	
 	with open("links_to_parse.txt", "w") as file:
