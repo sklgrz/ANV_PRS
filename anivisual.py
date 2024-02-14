@@ -85,6 +85,8 @@ def get_bg_image():
 	if 'url' in bg_url.text:
 		if ".png" in bg_url.text:
 			bg_url = re.search("/(.+png)", bg_url.text).group()
+		elif ".jpeg" in bg_url.text:
+			bg_url = re.search("/(.+jpeg)", bg_url.text).group()
 		else:
 			bg_url = re.search("/(.+jpg)", bg_url.text).group()
 		final_path = write_photo(bg_url)
@@ -157,6 +159,8 @@ def search_info():
 				desc_main[transtext(key, flag=True)] = date_transform(transtext(value))
 			elif transtext(key) in must_be_list and not isinstance(transtext(value), list):
 				desc_main[transtext(key, flag=True)] = [transtext(value)]
+			elif transtext(key) == "Автор:":
+				desc_main[transtext(key, flag=True)] = value.text.strip()
 			else:
 				desc_main[transtext(key, flag=True)] = transtext(value)
 
