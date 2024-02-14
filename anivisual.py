@@ -99,7 +99,7 @@ def get_description(save_all=True, form_text=True):
 
 
 def get_links():
-	""" Получение списка ссылок на скачивание под описания,
+	""" Получение списка ссылок на скачивание под описанием,
 	    получение дополнительных материалов, при наличии. """
 	links_list = []
 	links = soup.find("div", id="partners").findAll('span')
