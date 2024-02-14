@@ -137,6 +137,14 @@ def search_info():
 
 	return desc_main
 
+def get_guide():
+	""" Возвращает прохождение, если оно есть. """
+	try:
+		guide = soup.find("div", id='delivery').find("span")
+		return guide
+	except:
+		return ""
+
 def main():
 	''' Функционал парсера не полный. '''
 	novell_desc = search_info()
@@ -145,6 +153,7 @@ def main():
 	novell_desc["MEDIA"] = get_other_media()
 	novell_desc["description"] = get_description(save_all=False, form_text=False)
 	novell_desc["links"] = get_links()
+	novell_desc['Guide'] = get_guide()
 	pprint.pprint(novell_desc)
 
 
