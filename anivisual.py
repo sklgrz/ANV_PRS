@@ -6,6 +6,30 @@ import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
+def date_transform(date):
+	""" Возвращает отформатированные данные типа дата/время """
+	month = {
+		"Дек": "12", 
+		"Ноя": "11",
+		"Окт": "10",
+		"Сен": "09",
+		"Авг": "08",
+		"Июл": "07",
+		"Июн": "06",
+		"Май": "05",
+		"Апр": "04",
+		"Мар": "03",
+		"Фев": "02",
+		"Янв": "01"
+	}
+
+	for m in month.keys():
+		if m in date:
+			date = date.replace(m, month[m])
+			date = date.replace("/", "-")
+	date += ":00"
+
+	return date
 
 def transtext(obj, flag=False, flag_name=False):
 	''' Форматирование данных из блока информации.
@@ -115,7 +139,7 @@ def search_info():
 	    Тип, Жанр, Платформа, Продолжительность и так далее. """
 	desc_main = dict()
 	desc_main["NAME"] = transtext(soup.find('h1'), flag_name=True)
-	desc_main["RAITING"] = transtext(soup.find(attrs={"itemprop": "ratingValue"}))
+	desc_main["RAITING"] = float(transtext(soup.find(attrs={"itemprop": "ratingValue"})))
 
 	if soup.find('div', class_='single-goods__top').find('h3') is not None:
 		desc_main["SUBNAME"] = transtext(soup.find('h3'), flag_name=True)
@@ -127,7 +151,10 @@ def search_info():
 		key = data.find('span', class_='opt')
 		value = data.find('span', class_='val art')
 		if key:
-			desc_main[transtext(key, flag=True)] = transtext(value)
+			if transtext(key) in ["Дата добавления:", "Дата последнего обновления:"]:
+				desc_main[transtext(key, flag=True)] = date_transform(transtext(value))
+			else:
+				desc_main[transtext(key, flag=True)] = transtext(value)
 
 	value = []
 	categories = soup.findAll('td')
