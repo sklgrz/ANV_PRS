@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
+
 def date_transform(date):
 	""" Возвращает отформатированные данные типа дата/время """
 	month = {
@@ -146,6 +147,7 @@ def search_info():
 	else:
 		desc_main["SUBNAME"] = ""
 
+	must_be_list = ["Платформа:", "Тип:", "Теги:", "Жанры:"]
 	list_info = soup.findAll('dl')
 	for data in list_info:
 		key = data.find('span', class_='opt')
@@ -153,6 +155,8 @@ def search_info():
 		if key:
 			if transtext(key) in ["Дата добавления:", "Дата последнего обновления:"]:
 				desc_main[transtext(key, flag=True)] = date_transform(transtext(value))
+			elif transtext(key) in must_be_list and not isinstance(transtext(value), list):
+				desc_main[transtext(key, flag=True)] = [transtext(value)]
 			else:
 				desc_main[transtext(key, flag=True)] = transtext(value)
 
@@ -179,8 +183,8 @@ def main():
 	novell_desc["BG_IMAGE"] = get_bg_image()
 	novell_desc["MEDIA"] = get_other_media()
 	novell_desc["description"] = get_description(save_all=False, form_text=False)
-	novell_desc["links"] = get_links()
-	novell_desc['Guide'] = get_guide()
+	novell_desc["download_links"] = get_links()
+	novell_desc['guide'] = get_guide()
 	pprint.pprint(novell_desc)
 
 
