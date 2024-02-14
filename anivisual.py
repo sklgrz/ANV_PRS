@@ -170,11 +170,10 @@ def search_info():
 
 def get_guide():
 	""" Возвращает прохождение, если оно есть. """
-	try:
-		guide = soup.find("div", id='delivery').find("span")
+	guide = soup.find("div", id='delivery').find("span")
+	if guide is not None:
 		return guide
-	except:
-		return ""
+	return ""
 
 def main():
 	''' Функционал парсера не полный. '''
