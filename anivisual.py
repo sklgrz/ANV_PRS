@@ -149,7 +149,7 @@ def search_info():
 	else:
 		desc_main["SUBNAME"] = ""
 
-	must_be_list = ["Платформа:", "Тип:", "Теги:", "Жанры:"]
+	must_be_list = ["Платформа:", "Тип:", "Теги:", "Жанры:", "Год релиза:"]
 	list_info = soup.findAll('dl')
 	for data in list_info:
 		key = data.find('span', class_='opt')
@@ -173,7 +173,8 @@ def search_info():
 	return desc_main
 
 def get_guide():
-	""" Возвращает прохождение, если оно есть. """
+	""" Возвращает список ссылок на прохождение, если они есть.
+		Не учитывает прохождения, написанные на сайте. """
 	guide = soup.find("div", id='delivery').find("span")
 	if guide is not None:
 		return guide
