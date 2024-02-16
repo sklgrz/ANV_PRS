@@ -87,6 +87,8 @@ def get_bg_image():
 			bg_url = re.search("/(.+png)", bg_url.text).group()
 		elif ".jpeg" in bg_url.text:
 			bg_url = re.search("/(.+jpeg)", bg_url.text).group()
+		elif ".webp" in bg_url.text:
+			bg_url = re.search("/(.+webp)", bg_url.text).group()
 		else:
 			bg_url = re.search("/(.+jpg)", bg_url.text).group()
 		final_path = write_photo(bg_url)
