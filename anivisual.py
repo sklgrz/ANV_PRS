@@ -89,6 +89,8 @@ def get_bg_image():
 			bg_url = re.search("/(.+jpeg)", bg_url.text).group()
 		elif ".webp" in bg_url.text:
 			bg_url = re.search("/(.+webp)", bg_url.text).group()
+		elif ".gif" in bg_url.text:
+			bg_url = re.search("/(.+gif)", bg_url.text).group()
 		else:
 			bg_url = re.search("/(.+jpg)", bg_url.text).group()
 		final_path = write_photo(bg_url)
@@ -140,8 +142,22 @@ def get_links():
 
 def search_info():
 	""" Извлечение основной информации о новелле.
-	    Название, Оригинальное Название(опц.), Год релиза, 
-	    Тип, Жанр, Платформа, Продолжительность и так далее. """
+		Название, Оригинальное Название(опц.), Год релиза, 
+		Тип, Жанр, Платформа, Продолжительность и так далее. """
+	desc_main = {
+		"Продолжительность": "", 
+		"Год релиза": "",
+		"Платформа": "",
+		"Категории": "", 
+		"Перевод": "", 
+		"Добавил": "",
+		"Жанры": "",
+		"Автор": "",
+		"Теги": "",
+		"Тип": "",
+		"Язык": "",
+		"source_link" : URL
+	}
 	desc_main = dict()
 	desc_main["NAME"] = transtext(soup.find('h1'), flag_name=True)
 	desc_main["RAITING"] = float(transtext(soup.find(attrs={"itemprop": "ratingValue"})))
@@ -159,10 +175,13 @@ def search_info():
 		if key:
 			if transtext(key) in ["Дата добавления:", "Дата последнего обновления:"]:
 				desc_main[transtext(key, flag=True)] = date_transform(transtext(value))
+
+			elif transtext(key) in ["Автор:", "Добавил:", "Перевод:", "Язык:"]:
+				desc_main[transtext(key, flag=True)] = transtext(value, flag_name=True)
+
 			elif transtext(key) in must_be_list and not isinstance(transtext(value), list):
 				desc_main[transtext(key, flag=True)] = [transtext(value)]
-			elif transtext(key) == "Автор:":
-				desc_main[transtext(key, flag=True)] = value.text.strip()
+
 			else:
 				desc_main[transtext(key, flag=True)] = transtext(value)
 
