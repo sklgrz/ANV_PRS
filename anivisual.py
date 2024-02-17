@@ -91,6 +91,8 @@ def get_bg_image():
 			bg_url = re.search("/(.+webp)", bg_url.text).group()
 		elif ".gif" in bg_url.text:
 			bg_url = re.search("/(.+gif)", bg_url.text).group()
+		elif ".bmp" in bg_url.text:
+			bg_url = re.search("/(.+bmp)", bg_url.text).group()
 		else:
 			bg_url = re.search("/(.+jpg)", bg_url.text).group()
 		final_path = write_photo(bg_url)
@@ -105,7 +107,7 @@ def get_other_media():
 	media_urls = media.findAll('a')
 
 	for data in media_urls:
-		if 'youtu' in data['href']:
+		if 'youtu' in data['href'] or "drive.google" in data['href']:
 			result_list.append(data['href'])
 		else:
 			result_list.append(write_photo(data['href']))
